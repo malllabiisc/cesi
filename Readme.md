@@ -5,7 +5,7 @@ This is the code for the paper [CESI: Canonicalizing Open Knowledge Bases using 
 #### Dependencies
 
 * Python 2.7
-* Rest can be installed using `requirements.sh`
+* Rest can be installed using `requirements.txt`
 
 
 #### Datasets
