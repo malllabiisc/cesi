@@ -210,3 +210,18 @@ def containsNot(a):
 		return True
 	else:
 		return False
+
+def get_logger(name):
+	config_dict = json.load(open('./log_config.json'))
+	if os.path.isdir(config.dpath) == False: 
+		
+	config_dict['handlers']['file_handler']['filename'] = './log/' + name.replace('/', '-')
+	logging.config.dictConfig(config_dict)
+	logger = logging.getLogger(name)
+
+	std_out_format = '%(asctime)s - [%(levelname)s] - %(message)s'
+	consoleHandler = logging.StreamHandler(sys.stdout)
+	consoleHandler.setFormatter(logging.Formatter(std_out_format))
+	logger.addHandler(consoleHandler)
+
+	return logger

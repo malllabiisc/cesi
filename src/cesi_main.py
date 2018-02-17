@@ -1,5 +1,5 @@
 from   joblib import Parallel, delayed  	# For parallizing code
-import itertools, pathlib, config, json
+import itertools, pathlib, config, json, argparse
 import pickle, pdb
 import sys, operator
 
@@ -15,15 +15,13 @@ from metrics 	 import evaluate 		# Evaluation metrics
 reload(sys);
 sys.setdefaultencoding('utf-8')			# Swtching from ASCII to UTF-8 encoding
 
+parser = argparse.ArgumentParser(description='CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information')
+parser.add_argument('-data', 		dest='dataset', 	default='reverb45k', 	choices=['reverb45k', 'base', 'ambiguous'], help='Dataset to run CESI on')
+parser.add_argument('-split', 		dest='data_split', 	default='test', 	help='Dataset split for evaluation')
+parser.add_argument('-out_dir', 	dest='output_dir', 	default='../output', 	help='Directory to store CESI output')
+args = parser.parse_args()
+
 config.timer = Timer()
-
-if len(sys.argv) < 3:
-	print 	'Please provide required arguments: \n\
-		<dataset=[base/ambiguous/reverb45k]> <split=[test/valid]>'
-	exit(0)
-
-DATASET    = sys.argv[1]	# [base/ambiguous/reverb45k]
-DATA_SPLIT = sys.argv[2]	# [valid/test/full]
 
 config.dpath = '../cache/' + DATASET + '_' + DATA_SPLIT 	# Directory for storing results
 if os.path.isdir(config.dpath) == False:			# Create the directory if doesn't exist

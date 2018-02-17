@@ -14,8 +14,7 @@ import editdistance
 '''*************************************** INPUT CLASS ********************************************'''
 class Input(object):
 	def __init__(self, triples_list, amb_mentions, amb_ent, isAcronym):
-		if config.VERBOSE: 
-			config.sideInfo_fw = open(config.dpath + config.file_sideinfo, 'w')
+		config.sideInfo_fw = open(config.dpath + config.file_sideinfo, 'w')
 
 		self.triples  = triples_list
 		self.initVariables()
@@ -263,9 +262,8 @@ class Input(object):
 
 		for k, v in self.ent2wiki.items(): self.ent2wiki[k] = list(v)
 
-		if config.VERBOSE:
-			self.setHeading('Wikipedia Linking')
-			self.printCluster(self.ent2wiki, self.id2ent, 'm2ol')
+		self.setHeading('Wikipedia Linking')
+		self.printCluster(self.ent2wiki, self.id2ent, 'm2ol')
 		
 	def kbpLinking(self):
 		for trp in self.triples:
@@ -281,20 +279,18 @@ class Input(object):
 		
 		for k, v in self.rel2kbp.items(): self.rel2kbp[k] = list(v)
 
-		if config.VERBOSE:
-			self.setHeading('KBP Relation Clusters')
-			self.printCluster(self.rel2kbp, self.id2rel, 'm2ol')
+		self.setHeading('KBP Relation Clusters')
+		self.printCluster(self.rel2kbp, self.id2rel, 'm2ol')
 
 	def ppdbLinking(self):
 		self.ent2ppdb = getPPDBclusters(self.ent_list, self.ent2id)
 		self.rel2ppdb = getPPDBclusters(self.rel_list, self.rel2id)
 
-		if config.VERBOSE: 
-			self.setHeading('PPDB Entity Clusters')	
-			self.printCluster(self.ent2ppdb, self.id2ent, 'm2ol')
+		self.setHeading('PPDB Entity Clusters')	
+		self.printCluster(self.ent2ppdb, self.id2ent, 'm2ol')
 
-			self.setHeading('PPDB Relation Clusters')
-			self.printCluster(self.rel2ppdb, self.id2rel, 'm2ol')
+		self.setHeading('PPDB Relation Clusters')
+		self.printCluster(self.rel2ppdb, self.id2rel, 'm2ol')
 
 	def wordnetLinking(self):
 		
@@ -320,16 +316,11 @@ class Input(object):
 				res = lesk(sent, raw_rel) 
 				if len(dir(res)) == 92: self.rel2wnet[rel_id].add(res.name())
 
+		self.setHeading('Wordnet Entity Clusters')
+		self.printCluster(self.ent2wnet, self.id2ent, 'm2ol')
 
-		# for ent in self.ent_list: self.ent2wnet[self.ent2id[ent]] = [ele.name() for ele in lesk(ent)]
-		# for rel in self.rel_list: self.rel2wnet[self.rel2id[rel]] = [ele.name() for ele in wordnet.synsets(rel)]
-
-		if config.VERBOSE:
-			self.setHeading('Wordnet Entity Clusters')
-			self.printCluster(self.ent2wnet, self.id2ent, 'm2ol')
-
-			self.setHeading('Wordnet Relation Clusters')
-			self.printCluster(self.rel2wnet, self.id2rel, 'm2ol')
+		self.setHeading('Wordnet Relation Clusters')
+		self.printCluster(self.rel2wnet, self.id2rel, 'm2ol')
 
 
 	def amieInfo(self):
@@ -368,9 +359,8 @@ class Input(object):
 
 		self.rel2amie = uf.leader
 
-		if config.VERBOSE:
-			self.setHeading('AMIE Relation Clusters')
-			self.printCluster(uf.leader, self.id2rel, 'm2o')
+		self.setHeading('AMIE Relation Clusters')
+		self.printCluster(uf.leader, self.id2rel, 'm2o')
 
 	def morphNorm(self):
 
@@ -393,12 +383,11 @@ class Input(object):
 		for k, v in self.ent2morph.items(): self.ent2morph[k] = list(v)
 		for k, v in self.rel2morph.items(): self.rel2morph[k] = list(v)
 
-		if config.VERBOSE:
-			self.setHeading('MORPH NORM Entity Clusters')
-			self.printCluster(self.ent2morph, self.id2ent, 'm2ol')
+		self.setHeading('MORPH NORM Entity Clusters')
+		self.printCluster(self.ent2morph, self.id2ent, 'm2ol')
 
-			self.setHeading('MORPH NORM Relation Clusters')
-			self.printCluster(self.rel2morph, self.id2rel, 'm2ol')
+		self.setHeading('MORPH NORM Relation Clusters')
+		self.printCluster(self.rel2morph, self.id2rel, 'm2ol')
 
 	def tokenOverlap(self, amb_mentions, amb_ent):
 		
@@ -478,15 +467,14 @@ class Input(object):
 				if score != 0:
 					self.rel2idfTok[(id1, id2)] = score
 
-		if config.VERBOSE:
-			self.setHeading('IDF TOKEN Entity Clusters')
-			for (e1, e2), scr in self.ent2idfTok.items():
-				if e1 in self.isSub and e2 in self.isSub:
-					config.sideInfo_fw.write('(%s, %s) -> %f\n' % (self.id2ent[e1], self.id2ent[e2], scr))
+		self.setHeading('IDF TOKEN Entity Clusters')
+		for (e1, e2), scr in self.ent2idfTok.items():
+			if e1 in self.isSub and e2 in self.isSub:
+				config.sideInfo_fw.write('(%s, %s) -> %f\n' % (self.id2ent[e1], self.id2ent[e2], scr))
 
-			self.setHeading('IDF TOKEN Relation Clusters')
-			for (r1, r2), scr in self.rel2idfTok.items():
-				config.sideInfo_fw.write( '(%s, %s) -> %f\n' % (self.id2rel[r1], self.id2rel[r2], scr))
+		self.setHeading('IDF TOKEN Relation Clusters')
+		for (r1, r2), scr in self.rel2idfTok.items():
+			config.sideInfo_fw.write( '(%s, %s) -> %f\n' % (self.id2rel[r1], self.id2rel[r2], scr))
 
 	def lnkEntTypeInfo(self):
 		self.coarseLnkEntClust, self.fineLnkEntClust = getLnkEntTypeClusters(self.wiki2ent)
