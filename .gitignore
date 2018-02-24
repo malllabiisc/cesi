@@ -1,4 +1,6 @@
-/data/*
+/data/base/*
+/data/ambiguous/*
+/data/reverb45k/*
 /cache/*
 
 # Custom
