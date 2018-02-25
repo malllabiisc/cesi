@@ -4,8 +4,6 @@ from skge.util import *
 from skge.param import normless1, Parameter
 import skge.actfun as af
 import pdb
-from memory_profiler import profile
-
 
 class CESI(Model):
 
@@ -125,7 +123,6 @@ class CESI(Model):
 
 		return grad
 
-	# @profile
 	def pairwise_gradients(self, pxs, nxs):
 		if len(pxs) == 0 or len(nxs) == 0: return None
 

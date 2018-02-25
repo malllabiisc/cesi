@@ -1,13 +1,6 @@
-from   joblib import Parallel, delayed  	# For parallizing code
-import itertools, pathlib, config, json
-import pickle, pdb
-import sys, operator
-
-from config import *
 from helper import *
-from pprint import pprint
 
-from input  	 import Input 			# For processing data and side information
+from sideInfo  	 import SideInfo 		# For processing data and side information
 from embeddings  import Embeddings 		# For learning embeddings
 from cluster 	 import Clustering 		# For clustering learned embeddings
 from metrics 	 import evaluate 		# Evaluation metrics
@@ -15,200 +8,232 @@ from metrics 	 import evaluate 		# Evaluation metrics
 reload(sys);
 sys.setdefaultencoding('utf-8')			# Swtching from ASCII to UTF-8 encoding
 
-config.timer = Timer()
-
-if len(sys.argv) < 3:
-	print 	'Please provide required arguments: \n\
-		<dataset=[base/ambiguous/reverb45k]> <split=[test/valid]>'
-	exit(0)
-
-DATASET    = sys.argv[1]	# [base/ambiguous/reverb45k]
-DATA_SPLIT = sys.argv[2]	# [valid/test/full]
-
-config.dpath = '../cache/' + DATASET + '_' + DATA_SPLIT 	# Directory for storing results
-if os.path.isdir(config.dpath) == False:			# Create the directory if doesn't exist
-	os.system('mkdir -p ' + config.dpath)
-
-config.time_info = dict()
-
 ''' *************************************** DATASET PREPROCESSING **************************************** '''
-config.timer.start('Dataset Loading & Preprocessing')
-fname = config.dpath + config.file_triples 		# File for storing processed triples
 
-amb_ent = ddict(int)
-amb_mentions = {} 		# Contains all ambiguous mentions
-isAcronym = {} 			# Contains all mentions which can be acronyms
+class CESI_Main(object):
 
-triples_list 	= []
+	def __init__(self, args):
+		self.p = args
+		self.logger  = getLogger(args.name, args.log_dir, args.config_dir)
+		self.logger.info('Running {}'.format(args.name))
+		self.read_triples(
+)
+	def read_triples(self):
+		self.logger.info('Reading Triples')
 
-if not checkFile(fname):
+		fname = self.p.out_path + self.p.file_triples	# File for storing processed triples
+		self.triples_list = []				# List of all triples in the dataset
+		self.amb_ent 	  = ddict(int)			# Contains ambiguous entities in the dataset
+		self.amb_mentions = {} 				# Contains all ambiguous mentions
+		self.isAcronym    = {} 				# Contains all mentions which can be acronyms
 
-	''' Reading Triples '''
-	db_triples = []
+		if not checkFile(fname):
+			self.ent2wiki = ddict(set)
+			with codecs.open(args.data_path, encoding='utf-8', errors='ignore') as f:
+				for line in f:
+					trp = json.loads(line.strip())
 
-	ent2wiki = ddict(set)
+					trp['raw_triple'] = trp['triple']
+					sub, rel, obj     = trp['triple']
 
-	with open('../data/' + DATASET + '_' + DATA_SPLIT) as f:
-		for line in f:
-			trp = json.loads(line.strip())
+					if sub.isalpha() and sub.isupper(): self.isAcronym[proc_ent(sub)] = 1		# Check if the subject is an acronym
+					if obj.isalpha() and obj.isupper(): self.isAcronym[proc_ent(obj)] = 1		# Check if the object  is an acronym
 
-			trp['raw_triple'] = trp['triple']
-			sub, rel, obj     = trp['triple']
+					sub, rel, obj = proc_ent(sub), trp['triple_norm'][1], proc_ent(obj)		# Get Morphologically normalized subject, relation, object
+					if len(sub) == 0  or len(rel) == 0 or len(obj) == 0: continue  			# Ignore incomplete triples
 
-			if sub.isalpha() and sub.isupper(): isAcronym[proc_ent(sub)] = 1
-			if obj.isalpha() and obj.isupper(): isAcronym[proc_ent(obj)] = 1
-			sub, rel, obj = proc_ent(sub), trp['reverb_norm_triple'][1], proc_ent(obj)
+					trp['triple'] 		= [sub, rel, obj]
+					trp['triple_unique']	= [sub+'|'+str(trp['_id']), rel, obj+'|'+str(trp['_id'])]
+					trp['ent_lnk_sub']	= trp['entity_linking']['subject']
+					trp['ent_lnk_obj']	= trp['entity_linking']['object']
+					trp['true_sub_link']	= trp['true_link']['subject']
+					trp['true_obj_link']	= trp['true_link']['object']
+					trp['rel_info']		= trp['kbp_info']					# KBP side info for relation
 
-			trp['wiki_sub_lnk'] = 	[max(trp['coreNLP_wiki_lnk']['sub_lnk'].iteritems(), key=operator.itemgetter(1))[0]] if trp['coreNLP_wiki_lnk']['sub_lnk'] != None else None
+					self.triples_list.append(trp)
 
-			trp['wiki_obj_lnk'] = 	[max(trp['coreNLP_wiki_lnk']['obj_lnk'].iteritems(), key=operator.itemgetter(1))[0]] if trp['coreNLP_wiki_lnk']['obj_lnk'] != None else None
+			with open(fname, 'w') as f: 
+				f.write('\n'.join([json.dumps(triple) for triple in self.triples_list]))
+				self.logger.info('\tCached triples')
+		else:
+			self.logger.info('\tLoading cached triples')
+			with open(fname) as f: 
+				self.triples_list = [json.loads(triple) for triple in f.read().split('\n')]
 
-			if trp['wiki_sub_lnk'] != None: ent2wiki[sub].add(trp['wiki_sub_lnk'][0])
-			if trp['wiki_obj_lnk'] != None: ent2wiki[obj].add(trp['wiki_obj_lnk'][0])
+		''' Identifying ambiguous entities '''
+		amb_clust = {}
+		for trp in self.triples_list:
+			sub = trp['triple'][0]
+			for tok in sub.split():
+				amb_clust[tok] = amb_clust.get(tok, set())
+				amb_clust[tok].add(sub)
 
-			trp['triple'] = [sub, rel, obj]
-			db_triples.append(trp)
+		for rep, clust in amb_clust.items():
+			if rep in clust and len(clust) >= 3:
+				self.amb_ent[rep] = len(clust)
+				for ele in clust: self.amb_mentions[ele] = 1
 
-	''' Identifying ambiguous entities '''
-	amb_clust = {}
-	for ele in db_triples:
-		sub, _, _ = ele['triple']
-
-		for tok in sub.split():
-			amb_clust[tok] = amb_clust.get(tok, set())
-			amb_clust[tok].add(sub)
-
-	for rep, clust in amb_clust.items():
-		if rep in clust and len(clust) >= 3:
-			amb_ent[rep] = len(clust)
-			for ele in clust: amb_mentions[ele] = 1
-
-	''' Storing dataset in the required format '''
-	for trp in db_triples:
-		entry = dict()
-
-		sub, rel, obj 		= trp['triple']
-		if sub == '' or obj ==  '' or rel == '': continue  				# Ignore incomplete triples
-		sub_u, rel_u, obj_u 	= sub+'|'+str(trp['_id']), rel, obj+'|'+str(trp['_id']) # For identifying each entity uniquely
-
-		entry['triple'] 	= [sub, rel, obj]
-		entry['triple_u']	= [sub_u, rel_u, obj_u]
-		entry['raw_triple']	= trp['raw_triple']
-		entry['triple_n']	= trp['reverb_norm_triple']		# Morphological normalized [subject, relation, object]
-		entry['_id']		= trp['_id']				# Unique id of each triple
-		entry['FACC_lnk']	= trp['FACC_lnk'] 			# Contains ground truth linking
-		entry['sentences']	= trp['sentences']			# Source sentences of triple
-		entry['wiki_sub_lnk']	= trp['wiki_sub_lnk']			# Entity linking info for subject
-		entry['wiki_obj_lnk']	= trp['wiki_obj_lnk']			# Entity linking info for object
-		entry['rel_info']	= trp['rel_info']			# KBP side info for relation
-		
-		triples_list.append(entry)
-
-	with open(fname, 'w') as f: 
-		f.write('\n'.join([json.dumps(triple) for triple in triples_list]))
-else:
-	with open(fname) as f: 
-		triples_list = [json.loads(triple) for triple in f.read().split('\n')]
+		''' Ground truth clustering '''
+		self.true_ent2clust = ddict(set)
+		for trp in self.triples_list:
+			sub_u = trp['triple_unique'][0]
+			self.true_ent2clust[sub_u].add(trp['true_sub_link'])
+		self.true_clust2ent = invertDic(self.true_ent2clust, 'm2os')
 
 
-''' Ground truth clustering '''
-facc_ent2clust = ddict(set)
+	def get_sideInfo(self):
+		self.logger.info('Side Information Acquisition')
+		fname = self.p.out_path + self.p.file_sideinfo_pkl
 
-for trp in triples_list:
-	sub_u, _, _ 	= trp['triple_u']
-	facc_ent2clust[sub_u].add(trp['FACC_lnk']['sub_lnk'])
-facc_clust2ent = invertDic(facc_ent2clust, 'm2os')
+		if not checkFile(fname):
+			self.side_info = SideInfo(self.p, self.triples_list, self.amb_mentions, self.amb_ent, self.isAcronym)
+			self.logger.info('\tEntity Linking Side info'); 		self.side_info.wikiLinking()					# Entity Linking side information
+			self.logger.info('\tPPDB Side info'); 				self.side_info.ppdbLinking()					# PPDB side information
+			self.logger.info('\tWord Sense Disamb Side info'); 		self.side_info.wordnetLinking()					# Word-sense disambiguation side information
+			self.logger.info('\tMorphological Normalization Side info'); 	self.side_info.morphNorm()					# Morphological normalization side information
+			self.logger.info('\tToken Overlap Side info'); 			self.side_info.tokenOverlap(self.amb_mentions, self.amb_ent) 	# IDF Token Overlap side information
+			self.logger.info('\tAMIE Side info'); 				self.side_info.amieInfo()					# AMIE side information
+			self.logger.info('\tKBP Side info'); 				self.side_info.kbpLinking()					# KBP side information
 
-config.facc_ent2clust = facc_ent2clust
-config.facc_clust2ent = facc_clust2ent
-
-'''************************************** SIDE INFO ACQUISITION **************************************'''
-config.timer.start('Side Information Acquisition')
-fname = config.dpath + config.file_sideinfo_pkl
-
-if not checkFile(fname):
-	inp = Input(triples_list, amb_mentions, amb_ent, isAcronym)
-	pickle.dump(inp, open(fname, 'wb'))
-else:
-	inp = pickle.load(open(fname, 'rb'))
-
-'''******************************* EMBEDDINGS NP and Relation Phrases *********************************'''
-config.timer.start("Embedding NP and relation phrases");
-
-params = json.loads(open('./hyper_params.json').read())[DATASET]
-config.embed_dims = params['embed_dims']
-
-fname1 = config.dpath + config.file_entEmbed
-fname2 = config.dpath + config.file_relEmbed
-
-if not checkFile(fname1) or not checkFile(fname2):
-	Embeddings(inp, params)
-
-	pickle.dump(inp.ent_vector, open(fname1, 'wb'))
-	pickle.dump(inp.rel_vector, open(fname2, 'wb'))
-else:
-	inp.ent_vector = pickle.load(open(fname1, 'rb'))
-	inp.rel_vector = pickle.load(open(fname2, 'rb'))
-
-'''***************************************** PERFORM CLUSTERING ****************************************'''
-config.timer.start('Clustering');
-
-fn_ent = config.dpath + config.file_entClust
-fn_rel = config.dpath + config.file_relClust
-
-cluster_params = {
-	'linkage':	'complete',
-	'metric':	'cosine',
-	'criterion':	'distance',
-	'thresh':	'given',
-	'thresh_val': 	 params['best_thresh'],
-	'break_count':	 20,
-	'num_canopy': 	 1,
-	'search_steps':  100,
-	'upper_limit':   'max' #'25perc'
-}
+			del self.side_info.file
+			pickle.dump(self.side_info, open(fname, 'wb'))
+			self.logger.info('\tCached Side Information')
+		else:
+			self.logger.info('\tLoading cached Side Information')
+			self.side_info = pickle.load(open(fname, 'rb'))
 
 
-if not checkFile(fn_ent) or not checkFile(fn_rel):
-	# Clustering only subjects
-	inp.sub_vector = {}
-	inp.sub2id = {}
-	for sub_id, eid in enumerate(inp.isSub.keys()):
-		inp.sub2id[eid]    	= sub_id
-		inp.sub_vector[sub_id]  = inp.ent_vector[eid]
-	inp.id2sub = invertDic(inp.sub2id)
+	def embedKG(self):
+		self.logger.info("Embedding NP and relation phrases");
 
-	Clustering(inp, cluster_params)
+		fname1 = self.p.out_path + self.p.file_entEmbed
+		fname2 = self.p.out_path + self.p.file_relEmbed
 
-	dumpCluster(fn_ent, inp.ent_clust, inp.id2ent)
-	dumpCluster(fn_rel, inp.rel_clust, inp.id2rel)
-else:
-	inp.ent_clust = loadCluster(fn_ent, inp.ent2id)
-	inp.rel_clust = loadCluster(fn_rel, inp.rel2id)
+		if not checkFile(fname1) or not checkFile(fname2):
+			embed = Embeddings(self.p, self.side_info, self.logger)
+			embed.fit()
 
-''' ************************************** NP EVALUATION ************************************ '''
-config.timer.start('Evaluation');
+			self.ent2embed = embed.ent2embed			# Get the learned NP embeddings
+			self.rel2embed = embed.rel2embed			# Get the learned RP embeddings
 
-cesi_clust2ent = {}
-for rep, cluster in inp.ent_clust.items():
-	cesi_clust2ent[rep] = set(cluster)
-cesi_ent2clust = invertDic(cesi_clust2ent, 'm2os')
+			pickle.dump(self.ent2embed, open(fname1, 'wb'))
+			pickle.dump(self.rel2embed, open(fname2, 'wb'))
+		else:
+			self.logger.info('\tLoading cached Embeddings')
+			self.ent2embed = pickle.load(open(fname1, 'rb'))
+			self.rel2embed = pickle.load(open(fname2, 'rb'))
 
-cesi_ent2clust_u = {}
-for trp in inp.triples:
-	sub_u, sub 	= trp['triple_u'][0], trp['triple'][0]
-	cesi_ent2clust_u[sub_u] = cesi_ent2clust[inp.ent2id[sub]]
-cesi_clust2ent_u = invertDic(cesi_ent2clust_u, 'm2os')
+	def cluster(self):
+		self.logger.info('Clustering NPs and relation phrases');
 
-eval_results = evaluate(cesi_ent2clust_u, cesi_clust2ent_u, facc_ent2clust, facc_clust2ent)
+		fname1 = self.p.out_path + self.p.file_entClust
+		fname2 = self.p.out_path + self.p.file_relClust
 
-pprint(eval_results)
-print eval_results['macro_f1'], eval_results['micro_f1'], eval_results['pairx_f1']
+		if not checkFile(fname1) or not checkFile(fname2):
+			
+			self.sub2embed, self.sub2id = {}, {}		# Clustering only subjects
+			for sub_id, eid in enumerate(self.side_info.isSub.keys()):
+				self.sub2id[eid]    	= sub_id
+				self.sub2embed[sub_id] = self.ent2embed[eid]
+			self.side_info.id2sub = invertDic(self.sub2id)
 
-print 'CESI: #Clusters: %d, #Singletons %d'    % (len(cesi_clust2ent_u), len([1 for _, clust in cesi_clust2ent_u.items() if len(clust) == 1])) 
-print 'Gold: #Clusters: %d, #Singletons %d \n' 	    % (len(facc_clust2ent),   len([1 for _, clust in facc_clust2ent.items() if len(clust) == 1]))
+			clust = Clustering(self.sub2embed, self.rel2embed, self.side_info, self.p)
+			self.ent_clust = clust.ent_clust
+			self.rel_clust = clust.rel_clust
 
-# Dump the final results
-fname = config.dpath + config.file_evalResults
-with open(fname, 'w') as f: 
-	f.write(json.dumps(eval_results) + '\n')
+			dumpCluster(fname1, self.ent_clust, self.side_info.id2ent)
+			dumpCluster(fname2, self.rel_clust, self.side_info.id2rel)
+		else:
+			self.logger.info('\tLoading cached Clustering')
+			self.ent_clust = loadCluster(fname1, self.side_info.ent2id)
+			self.rel_clust = loadCluster(fname2, self.side_info.rel2id)
+
+	def evaluate(self):
+		self.logger.info('NP Canonicalizing Evaluation');
+
+		cesi_clust2ent = {}
+		for rep, cluster in self.ent_clust.items():
+			cesi_clust2ent[rep] = set(cluster)
+		cesi_ent2clust = invertDic(cesi_clust2ent, 'm2os')
+
+		cesi_ent2clust_u = {}
+		for trp in self.side_info.triples:
+			sub_u, sub = trp['triple_unique'][0], trp['triple'][0]
+			cesi_ent2clust_u[sub_u] = cesi_ent2clust[self.side_info.ent2id[sub]]
+		cesi_clust2ent_u = invertDic(cesi_ent2clust_u, 'm2os')
+
+		eval_results = evaluate(cesi_ent2clust_u, cesi_clust2ent_u, self.true_ent2clust, self.true_clust2ent)
+
+		pprint(eval_results)
+		self.logger.info(eval_results['macro_f1'], eval_results['micro_f1'], eval_results['pairx_f1'])
+
+		self.logger.info('CESI: #Clusters: %d, #Singletons %d'    % (len(cesi_clust2ent_u), len([1 for _, clust in cesi_clust2ent_u.items() if len(clust) == 1])))
+		self.logger.info('Gold: #Clusters: %d, #Singletons %d \n' % (len(self.true_clust2ent),   len([1 for _, clust in self.true_clust2ent.items()   if len(clust) == 1])))
+
+		# Dump the final results
+		fname = self.p.out_path + self.p.file_results
+		with open(fname, 'w') as f: f.write(json.dumps(eval_results))
+
+
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description='CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information')
+	parser.add_argument('-data', 		dest='dataset', 	default='reverb45k', 			help='Dataset to run CESI on')
+	parser.add_argument('-split', 		dest='split', 		default='test', 			help='Dataset split for evaluation')
+	parser.add_argument('-data_dir', 	dest='data_dir', 	default='./data', 			help='Data directory')
+	parser.add_argument('-out_dir', 	dest='out_dir', 	default='./output', 			help='Directory to store CESI output')
+	parser.add_argument('-config_dir', 	dest='config_dir', 	default='./config', 			help='Config directory')
+	parser.add_argument('-log_dir', 	dest='log_dir', 	default='./log', 			help='Directory for dumping log files')
+	parser.add_argument('-ppdb_url', 	dest='ppdb_url', 	default='http://10.24.28.104:9997/', 	help='Assigned name to the run')
+	parser.add_argument('-reset',	 	dest="reset", 		action='store_true', 			help='Clear the cached files (Start a fresh run)')
+	parser.add_argument('-name', 		dest='name', 		default=None, 				help='Specify name for restoring previous run')
+
+	# Embedding hyper-parameters
+	parser.add_argument('-num_neg_samp', 	dest='num_neg_samp', 	default=10,		type=int,	help='Number of Negative Samples')
+	parser.add_argument('-nbatches', 	dest='nbatches', 	default=500,		type=int,	help='Number of batches per epoch')
+	parser.add_argument('-max_epochs', 	dest='max_epochs', 	default=1,		type=int,	help='Maximum number of epoch')
+	parser.add_argument('-lr', 		dest='lr', 		default=0.001,		type=float,	help='Learning rate')
+	parser.add_argument('-lambd', 		dest='lambd', 		default=0,		type=float,	help='Regularization constant for embeddings')	
+	parser.add_argument('-lambd_wiki', 	dest='lambd_wiki', 	default=1,		type=float,	help='Entity linking side info constant')
+	parser.add_argument('-lambd_wnet', 	dest='lambd_wnet', 	default=0.1,		type=float,	help='Word sense disamb side info constant')
+	parser.add_argument('-lambd_ppdb', 	dest='lambd_ppdb', 	default=0.1,		type=float,	help='PPDB side info constant')
+	parser.add_argument('-lambd_morph', 	dest='lambd_morph', 	default=0.1,		type=float,	help='Morpho Normalization side info constant')
+	parser.add_argument('-lambd_idfTok', 	dest='lambd_idfTok', 	default=0,		type=float,	help='IDF Token side info constant')
+	parser.add_argument('-lambd_main_obj', 	dest='lambd_main_obj', 	default=0,		type=float,	help='Structural info constant')
+	parser.add_argument('-lambd_amie', 	dest='lambd_amie', 	default=0.001,		type=float,	help='AMIE side info constant')
+	parser.add_argument('-lambd_kbp', 	dest='lambd_kbp', 	default=0.001,		type=float,	help='KBP side info constant')
+	parser.add_argument('-no-norm', 	dest='normalize', 	action='store_false',			help='Normalize embeddings after every epoch')
+	parser.add_argument('-margin', 		dest='margin', 		default=0.01,		type=float, 	help='Margin for pairwise objective')
+	parser.add_argument('-embed_dims', 	dest='embed_dims', 	default=300,		type=int,	help='Embedding dimension')
+	parser.add_argument('-embed_init', 	dest='embed_init', default='glove', choices=['glove', 'random'],help='Method for Initializing NP and Relation embeddings')
+	parser.add_argument('-embed_loc', 	dest='embed_loc',  default='./glove/glove.6B.300d_word2vec.txt',help='Location of embeddings to be loaded')
+	parser.add_argument('-trainer', 	dest='trainer',    default='pairwise', choices=['stochastic', 'pairwise'], help='Object function for learning embeddings')
+
+	# Clustering hyper-parameters
+	parser.add_argument('-linkage', 	dest='linkage',    default='complete', choices=['complete', 'single', 'avergage'], help='HAC linkage criterion')
+	parser.add_argument('-thresh_val', 	dest='thresh_val', 	default=.4239, 		type=float, 	help='Threshold for clustering')
+	parser.add_argument('-metric', 		dest='metric', 		default='cosine', 			help='Metric for calculating distance between embeddings')
+	parser.add_argument('-num_canopy', 	dest='num_canopy', 	default=1,		type=int,	help='Number of caponies while clustering')
+	args = parser.parse_args()
+
+	if args.name == None: args.name = args.dataset + '_' + args.split + '_' + time.strftime("%d_%m_%Y") + '_' + time.strftime("%H:%M:%S")
+
+	args.file_triples	= '/triples.txt'		# Location for caching triples
+	args.file_entEmbed 	= '/embed_ent.pkl'		# Location for caching learned embeddings for noun phrases
+	args.file_relEmbed	= '/embed_rel.pkl'		# Location for caching learned embeddings for relation phrases 
+	args.file_entClust	= '/cluster_ent.txt'		# Location for caching Entity clustering results
+	args.file_relClust	= '/cluster_rel.txt'		# Location for caching Relation clustering results
+	args.file_sideinfo	= '/side_info.txt'		# Location for caching side information extracted for the KG (for display)
+	args.file_sideinfo_pkl	= '/side_info.pkl'		# Location for caching side information extracted for the KG (binary)
+	args.file_hyperparams	= '/hyperparams.json'		# Location for loading hyperparameters
+	args.file_results	= '/results.json'		# Location for loading hyperparameters
+
+	args.out_path  = args.out_dir  + '/' + args.name 				# Directory for storing output
+	args.data_path = args.data_dir + '/' + args.dataset + '/' + args.dataset + '_' + args.split  # Path to the dataset
+	if args.reset: os.system('rm -r {}'.format(args.out_path))			# Clear cached files if requeste
+	if not os.path.isdir(args.out_path): os.system('mkdir -p ' + args.out_path)	# Create the output directory if doesn't exist
+
+	cesi = CESI_Main(args)	# Loading KG triples
+	cesi.get_sideInfo()	# Side Information Acquisition
+	cesi.embedKG()		# Learning embedding for Noun and relation phrases
+	cesi.cluster()		# Clustering NP and relation phrase embeddings
+	cesi.evaluate()		# Evaluating the performance over NP canonicalization

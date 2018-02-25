@@ -25,7 +25,7 @@ def macroPrecision(C_clust2ele, E_ele2clust):
 			res = res.intersection(E_ele2clust[ele])
 
 		if   len(res) == 1: num_prec += 1
-		elif len(res) > 1: print 'ERROR In Clustering micro!!!'
+		elif len(res) > 1: print( 'ERROR In Clustering micro!!!')
 
 	if len(C_clust2ele) == 0: return 0
 	return float(num_prec) / float(len(C_clust2ele))
@@ -68,7 +68,7 @@ def pairPrecision(C_clust2ele, E_ele2clust):
 
 			res = E_ele2clust[e1].intersection(E_ele2clust[e2])
 			if   len(res) == 1: num_hit += 1
-			# elif len(res) > 1: print 'ERROR In Clustering pairwise!!!'
+			# elif len(res) > 1: print( 'ERROR In Clustering pairwise!!!')
 
 	if num_pairs == 0: return 0
 	return float(num_hit) / float(num_pairs)
@@ -91,7 +91,7 @@ def pairwiseMetric(C_clust2ele, E_ele2clust, E_clust2ent):
 	if num_C_pairs == 0 or num_E_pairs == 0: 
 		return 1e-6, 1e-6
 
-	# print num_hit, num_C_pairs, num_E_pairs
+	# print( num_hit, num_C_pairs, num_E_pairs)
 	return float(num_hit) / float(num_C_pairs), float(num_hit) / float(num_E_pairs)
 
 
