@@ -16,8 +16,8 @@ class CESI_Main(object):
 		self.p = args
 		self.logger  = getLogger(args.name, args.log_dir, args.config_dir)
 		self.logger.info('Running {}'.format(args.name))
-		self.read_triples(
-)
+		self.read_triples()
+
 	def read_triples(self):
 		self.logger.info('Reading Triples')
 
@@ -148,7 +148,7 @@ class CESI_Main(object):
 			self.ent_clust = loadCluster(fname1, self.side_info.ent2id)
 			self.rel_clust = loadCluster(fname2, self.side_info.rel2id)
 
-	def evaluate(self):
+	def np_evaluate(self):
 		self.logger.info('NP Canonicalizing Evaluation');
 
 		cesi_clust2ent = {}
@@ -165,10 +165,10 @@ class CESI_Main(object):
 		eval_results = evaluate(cesi_ent2clust_u, cesi_clust2ent_u, self.true_ent2clust, self.true_clust2ent)
 
 		pprint(eval_results)
-		self.logger.info(eval_results['macro_f1'], eval_results['micro_f1'], eval_results['pairx_f1'])
+		self.logger.info('Macro F1: {}, Micro F1: {}, Pairwise F1: {}'.format(eval_results['macro_f1'], eval_results['micro_f1'], eval_results['pairx_f1']))
 
-		self.logger.info('CESI: #Clusters: %d, #Singletons %d'    % (len(cesi_clust2ent_u), len([1 for _, clust in cesi_clust2ent_u.items() if len(clust) == 1])))
-		self.logger.info('Gold: #Clusters: %d, #Singletons %d \n' % (len(self.true_clust2ent),   len([1 for _, clust in self.true_clust2ent.items()   if len(clust) == 1])))
+		self.logger.info('CESI: #Clusters: %d, #Singletons %d'    % (len(cesi_clust2ent_u), 	len([1 for _, clust in cesi_clust2ent_u.items()    if len(clust) == 1])))
+		self.logger.info('Gold: #Clusters: %d, #Singletons %d \n' % (len(self.true_clust2ent),  len([1 for _, clust in self.true_clust2ent.items() if len(clust) == 1])))
 
 		# Dump the final results
 		fname = self.p.out_path + self.p.file_results
@@ -190,7 +190,7 @@ if __name__ == '__main__':
 	# Embedding hyper-parameters
 	parser.add_argument('-num_neg_samp', 	dest='num_neg_samp', 	default=10,		type=int,	help='Number of Negative Samples')
 	parser.add_argument('-nbatches', 	dest='nbatches', 	default=500,		type=int,	help='Number of batches per epoch')
-	parser.add_argument('-max_epochs', 	dest='max_epochs', 	default=1,		type=int,	help='Maximum number of epoch')
+	parser.add_argument('-max_epochs', 	dest='max_epochs', 	default=10,		type=int,	help='Maximum number of epoch')
 	parser.add_argument('-lr', 		dest='lr', 		default=0.001,		type=float,	help='Learning rate')
 	parser.add_argument('-lambd', 		dest='lambd', 		default=0,		type=float,	help='Regularization constant for embeddings')	
 	parser.add_argument('-lambd_wiki', 	dest='lambd_wiki', 	default=1,		type=float,	help='Entity linking side info constant')
@@ -236,4 +236,4 @@ if __name__ == '__main__':
 	cesi.get_sideInfo()	# Side Information Acquisition
 	cesi.embedKG()		# Learning embedding for Noun and relation phrases
 	cesi.cluster()		# Clustering NP and relation phrase embeddings
-	cesi.evaluate()		# Evaluating the performance over NP canonicalization
+	cesi.np_evaluate()		# Evaluating the performance over NP canonicalization

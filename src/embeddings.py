@@ -9,7 +9,6 @@ from joblib import Parallel, delayed
 from skge import HolE, StochasticTrainer, PairwiseStochasticTrainer, actfun
 from skge.sample import LCWASampler
 from skge.cesi import CESI
-from glove import *
 from sklearn.preprocessing import normalize
 
 class Embeddings(object):
