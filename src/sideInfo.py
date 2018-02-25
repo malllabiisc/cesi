@@ -144,12 +144,11 @@ class SideInfo(object):
 				res = lesk(sent, raw_rel) 
 				if len(dir(res)) == 92: self.rel2wnet[rel_id].add(res.name())
 
+		self.setHeading('Wordnet Entity Clusters')
+		self.printCluster(self.ent2wnet, self.id2ent, 'm2ol')
 
 		# for ent in self.ent_list: self.ent2wnet[self.ent2id[ent]] = [ele.name() for ele in lesk(ent)]
 		# for rel in self.rel_list: self.rel2wnet[self.rel2id[rel]] = [ele.name() for ele in wordnet.synsets(rel)]
-
-		self.setHeading('Wordnet Entity Clusters')
-		self.printCluster(self.ent2wnet, self.id2ent, 'm2ol')
 
 		self.setHeading('Wordnet Relation Clusters')
 		self.printCluster(self.rel2wnet, self.id2rel, 'm2ol')
