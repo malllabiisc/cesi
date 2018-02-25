@@ -1,7 +1,9 @@
 /data/base/*
 /data/ambiguous/*
 /data/reverb45k/*
-/cache/*
+/output/*
+/log/*
+/glove/*
 
 # Custom
 *.idea
