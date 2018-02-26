@@ -125,7 +125,7 @@ def getPPDBclustersRaw(ppdb_url, phr_list):
 # ***************************************** TEXT SPLIT ***********************************************
 def proc_ent(ent):
 	ent = ent.lower().replace('.', ' ').replace('-', ' ').strip().replace('_',' ').replace('|', ' ').strip()
-	ent = ' '.join([ str(tok).split('/')[0] for tok in lemmatize(ent)])
+	ent = ' '.join([ tok.decode('utf-8').split('/')[0] for tok in lemmatize(ent)])
 	# ent = ' '.join(list( set(ent.split()) - set(config.stpwords)))
 	return ent
 

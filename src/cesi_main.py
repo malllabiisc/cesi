@@ -34,7 +34,7 @@ class CESI_Main(object):
 					trp = json.loads(line.strip())
 
 					trp['raw_triple'] = trp['triple']
-					sub, rel, obj     = trp['triple']
+					sub, rel, obj     = map(str, trp['triple'])
 
 					if sub.isalpha() and sub.isupper(): self.isAcronym[proc_ent(sub)] = 1		# Check if the subject is an acronym
 					if obj.isalpha() and obj.isupper(): self.isAcronym[proc_ent(obj)] = 1		# Check if the object  is an acronym
