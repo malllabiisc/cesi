@@ -51,11 +51,11 @@ Source code and dataset for The WebConf 2018 (WWW 2018) paper: [CESI: Canonicali
 ##### Start PPDB server:
 
 * Running PPDB server is essential for running the main code.
-* To start the server execute: `python ppdb_server.py -port 9997`  (Let the server run in a separate terminal)
+* To start the server execute: `python ppdb/ppdb_server.py -port 9997`  (Let the server run in a separate terminal)
 
 ##### Run the main code:
 
-* `python main_cesi.py -name reverb45_test_run`
+* `python src/main_cesi.py -name reverb45_test_run`
 * On executing the above command, all the output will be dumped in `output/reverb45_test_run` directory. 
 
 ##### Extra note:
