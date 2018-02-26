@@ -1,9 +1,11 @@
 /data/base/*
 /data/ambiguous/*
-#/data/reverb45k/*
+
 /output/*
 /log/*
 /glove/*
+
+/ppdb/*.txt
 
 # Custom
 *.idea
@@ -13,9 +15,6 @@ tmp/
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
-*.so
 
 # Distribution / packaging
 .Python
@@ -27,4 +26,4 @@ __pycache__/
 .ipynb_checkpoints
 
 # pyenv
-.python-versio
+.python-version
