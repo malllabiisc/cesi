@@ -1,6 +1,6 @@
 /data/base/*
 /data/ambiguous/*
-/data/reverb45k/*
+#/data/reverb45k/*
 /output/*
 /log/*
 /glove/*
