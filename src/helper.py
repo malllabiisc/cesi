@@ -1,7 +1,7 @@
 import os, sys, re, pdb, time, argparse, logging, logging.config
 import numpy as np, requests, json, operator, pickle, codecs
 from numpy.fft import fft, ifft
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 import itertools, pathlib
 from pprint import pprint
 
@@ -62,12 +62,21 @@ def loadCluster(fname, name2id):
 	return rep2clust
 
 # Get embedding of words from gensim word2vec model
-def getEmbeddings(model, wrd_list, embed_dims):
+def getEmbeddings(model, phr_list, embed_dims):
 	embed_list = []
 
-	for wrd in wrd_list:
-		if wrd in model.vocab: 	embed_list.append(model.word_vec(wrd))
-		else:			embed_list.append(np.random.rand(embed_dims))
+	for phr in phr_list:
+		temp = []
+
+		if phr in model.vocab:
+			embed_list.append(model.word_vec(phr))
+		else:
+			vec = np.zeros(embed_dims, np.float32)
+			wrds = word_tokenize(phr)
+			for wrd in wrds:
+				if wrd in model.vocab: 	vec += model.word_vec(wrd)
+				else:			vec += np.random.randn(embed_dims)
+			embed_list.append(vec / len(wrds))
 
 	return np.array(embed_list)
 
@@ -116,7 +125,7 @@ def getPPDBclustersRaw(ppdb_url, phr_list):
 # ***************************************** TEXT SPLIT ***********************************************
 def proc_ent(ent):
 	ent = ent.lower().replace('.', ' ').replace('-', ' ').strip().replace('_',' ').replace('|', ' ').strip()
-	ent = ' '.join([tok.split('/')[0] for tok in lemmatize(ent.encode())])
+	ent = ' '.join([ str(tok).split('/')[0] for tok in lemmatize(ent)])
 	# ent = ' '.join(list( set(ent.split()) - set(config.stpwords)))
 	return ent
 

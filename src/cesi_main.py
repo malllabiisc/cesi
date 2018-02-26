@@ -5,8 +5,8 @@ from embeddings  import Embeddings 		# For learning embeddings
 from cluster 	 import Clustering 		# For clustering learned embeddings
 from metrics 	 import evaluate 		# Evaluation metrics
 
-reload(sys);
-sys.setdefaultencoding('utf-8')			# Swtching from ASCII to UTF-8 encoding
+# reload(sys);
+# sys.setdefaultencoding('utf-8')			# Swtching from ASCII to UTF-8 encoding
 
 ''' *************************************** DATASET PREPROCESSING **************************************** '''
 

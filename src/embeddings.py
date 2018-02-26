@@ -21,8 +21,8 @@ class Embeddings(object):
 		self.logger = logger
 
 		self.side_info  = side_info
-		self.ent_vector = {}			# Stores final embeddings learned for noun phrases
-		self.rel_vector = {}			# Stores final embeddings learned for relation phrases
+		self.ent2embed = {}			# Stores final embeddings learned for noun phrases
+		self.rel2embed = {}			# Stores final embeddings learned for relation phrases
 
 	def fit(self):
 		N, M 	= len(self.side_info.ent_list), len(self.side_info.rel_list)
@@ -97,8 +97,8 @@ class Embeddings(object):
 	
 		self.trainer.fit(xs, ys)
 
-		for id in self.side_info.id2ent.keys(): self.ent_vector[id] = self.trainer.model.E[id]
-		for id in self.side_info.id2rel.keys(): self.rel_vector[id] = self.trainer.model.R[id]
+		for id in self.side_info.id2ent.keys(): self.ent2embed[id] = self.trainer.model.E[id]
+		for id in self.side_info.id2rel.keys(): self.rel2embed[id] = self.trainer.model.R[id]
 
 	def epoch_callback(self, m, with_eval=False):
 		if m.epoch % 1 == 0: 
