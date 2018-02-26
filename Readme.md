@@ -42,15 +42,22 @@ Source code and dataset for The WebConf 2018 (WWW 2018) paper: [CESI: Canonicali
 }        
 ```
 
-Preprocessed PPDB dataset can be downloaded from [link]().
-
 #### Usage:
+
+##### Setup Environment:
+
+* After installing python dependencies, execute `sh setup.sh` for setting up required things.
 
 ##### Start PPDB server:
 
-`python ppdb_server.py <port[6686]>` 
+* Running PPDB server is essential for running the main code.
+* To start the server execute: `python ppdb_server.py -port 9997`  (Let the server run in a separate terminal)
 
 ##### Run the main code:
 
-`python main_cesi.py <dataset[base/ambiguous/reverb45k]> <split[valid/test]>`
+* `python main_cesi.py -name reverb45_test_run`
+* On executing the above command, all the output will be dumped in `output/reverb45_test_run` directory. 
 
+##### Extra note:
+
+* We recommend to view *.py files with tab size 8.

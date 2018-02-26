@@ -164,9 +164,7 @@ class CESI_Main(object):
 
 		eval_results = evaluate(cesi_ent2clust_u, cesi_clust2ent_u, self.true_ent2clust, self.true_clust2ent)
 
-		pprint(eval_results)
-		self.logger.info('Macro F1: {}, Micro F1: {}, Pairwise F1: {}'.format(eval_results['macro_f1'], eval_results['micro_f1'], eval_results['pairx_f1']))
-
+		self.logger.info('Macro F1: {}, Micro F1: {}, Pairwise F1: {}'.format(eval_results['macro_f1'], eval_results['micro_f1'], eval_results['pair_f1']))
 		self.logger.info('CESI: #Clusters: %d, #Singletons %d'    % (len(cesi_clust2ent_u), 	len([1 for _, clust in cesi_clust2ent_u.items()    if len(clust) == 1])))
 		self.logger.info('Gold: #Clusters: %d, #Singletons %d \n' % (len(self.true_clust2ent),  len([1 for _, clust in self.true_clust2ent.items() if len(clust) == 1])))
 
@@ -183,7 +181,7 @@ if __name__ == '__main__':
 	parser.add_argument('-out_dir', 	dest='out_dir', 	default='./output', 			help='Directory to store CESI output')
 	parser.add_argument('-config_dir', 	dest='config_dir', 	default='./config', 			help='Config directory')
 	parser.add_argument('-log_dir', 	dest='log_dir', 	default='./log', 			help='Directory for dumping log files')
-	parser.add_argument('-ppdb_url', 	dest='ppdb_url', 	default='http://10.24.28.104:9997/', 	help='Assigned name to the run')
+	parser.add_argument('-ppdb_url', 	dest='ppdb_url', 	default='http://localhost:9997/', 	help='Assigned name to the run')
 	parser.add_argument('-reset',	 	dest="reset", 		action='store_true', 			help='Clear the cached files (Start a fresh run)')
 	parser.add_argument('-name', 		dest='name', 		default=None, 				help='Specify name for restoring previous run')
 

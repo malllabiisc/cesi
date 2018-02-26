@@ -111,7 +111,6 @@ def macroF1(C_ele2clust, C_clust2ele, E_ele2clust, E_clust2ent):
 	macro_f1	= calcF1(macro_prec, macro_recall)
 	return macro_f1
 
-
 def pairF1(C_ele2clust, C_clust2ele, E_ele2clust, E_clust2ent):
 	pair_prec,pair_recall = pairwiseMetric(C_clust2ele, E_ele2clust, E_clust2ent)
 	pair_f1		= calcF1(pair_prec, pair_recall)
@@ -129,10 +128,6 @@ def evaluate(C_ele2clust, C_clust2ele, E_ele2clust, E_clust2ent):
 	pair_prec,pair_recall = pairwiseMetric(C_clust2ele, E_ele2clust, E_clust2ent)
 	pair_f1		= calcF1(pair_prec, pair_recall)
 
-	pairx_prec 	= pairPrecision(C_clust2ele, E_ele2clust)
-	pairx_recall 	= pairPrecision(E_clust2ent, C_ele2clust)
-	pairx_f1	= calcF1(pairx_prec, pairx_recall)
-
 	return {
 		'macro_prec': 	round(macro_prec, 	4),
 		'macro_recall':	round(macro_recall, 	4),
@@ -145,8 +140,4 @@ def evaluate(C_ele2clust, C_clust2ele, E_ele2clust, E_clust2ent):
 		'pair_prec': 	round(pair_prec, 	4),
 		'pair_recall':	round(pair_recall, 	4),
 		'pair_f1':	round(pair_f1, 		4),
-
-		'pairx_prec': 	round(pairx_prec, 	4),
-		'pairx_recall':	round(pairx_recall, 	4),
-		'pairx_f1':	round(pairx_f1, 	4)
 	}
