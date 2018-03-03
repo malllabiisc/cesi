@@ -61,3 +61,6 @@ Source code and dataset for The WebConf 2018 (WWW 2018) paper: [CESI: Canonicali
 ##### Extra note:
 
 * We recommend to view *.py files with tab size 8.
+
+##### Contact
+For more information please contact Shikhar Vashishth (shikharvashishth@gmail.com).
