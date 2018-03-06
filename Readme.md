@@ -1,6 +1,8 @@
 ## CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information
 
-Source code and dataset for The WebConf 2018 (WWW 2018) paper: [CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information]().
+Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.thewebconf.org/) paper: [CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information](http://malllabiisc.github.io/publications/papers/cesi_www18.pdf).
+
+<img src="https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.pdf" alt="https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.pdf">
 
 #### Dependencies
 
