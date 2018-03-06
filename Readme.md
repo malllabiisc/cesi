@@ -2,7 +2,7 @@
 
 Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.thewebconf.org/) paper: [CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information](http://malllabiisc.github.io/publications/papers/cesi_www18.pdf).
 
-<img src="https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.pdf" alt="https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.pdf">
+<img src="https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.png" alt="https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.png">
 
 #### Dependencies
 
@@ -53,16 +53,13 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 ##### Start PPDB server:
 
 * Running PPDB server is essential for running the main code.
-* To start the server execute: `python ppdb/ppdb_server.py -port 9997`  (Let the server run in a separate terminal)
+* To start the server execute: `python ppdb_server.py -port 9997`  (Let the server run in a separate terminal)
 
 ##### Run the main code:
 
-* `python src/main_cesi.py -name reverb45_test_run`
+* `python main_cesi.py -name reverb45_test_run`
 * On executing the above command, all the output will be dumped in `output/reverb45_test_run` directory. 
 
 ##### Extra note:
 
 * We recommend to view *.py files with tab size 8.
-
-##### Contact
-For more information please contact Shikhar Vashishth (shikharvashishth@gmail.com).
