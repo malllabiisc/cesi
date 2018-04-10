@@ -181,9 +181,9 @@ if __name__ == '__main__':
 	parser.add_argument('-out_dir', 	dest='out_dir', 	default='./output', 			help='Directory to store CESI output')
 	parser.add_argument('-config_dir', 	dest='config_dir', 	default='./config', 			help='Config directory')
 	parser.add_argument('-log_dir', 	dest='log_dir', 	default='./log', 			help='Directory for dumping log files')
-	parser.add_argument('-ppdb_url', 	dest='ppdb_url', 	default='http://localhost:9997/', 	help='Assigned name to the run')
+	parser.add_argument('-ppdb_url', 	dest='ppdb_url', 	default='http://localhost:9997/', 	help='Address of PPDB server')
 	parser.add_argument('-reset',	 	dest="reset", 		action='store_true', 			help='Clear the cached files (Start a fresh run)')
-	parser.add_argument('-name', 		dest='name', 		default=None, 				help='Specify name for restoring previous run')
+	parser.add_argument('-name', 		dest='name', 		default=None, 				help='Assign a name to the run')
 
 	# Embedding hyper-parameters
 	parser.add_argument('-num_neg_samp', 	dest='num_neg_samp', 	default=10,		type=int,	help='Number of Negative Samples')
