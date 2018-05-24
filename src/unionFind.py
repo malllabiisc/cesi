@@ -36,13 +36,3 @@ class DisjointSet(object):
 			else:
 				self.leader[a] = self.leader[b] = a
 				self.group[a] = set([a, b])
-# uf = UnionFind()
-
-# def show():
-# 	print uf.parents
-# 	print uf. weights
-# # uf.union(1,2)
-# uf.union(2,3)
-# uf.union(4,5)
-# pdb.set_trace()
-# print uf.__getitem__(2)

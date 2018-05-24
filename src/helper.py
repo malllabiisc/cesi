@@ -66,8 +66,6 @@ def getEmbeddings(model, phr_list, embed_dims):
 	embed_list = []
 
 	for phr in phr_list:
-		temp = []
-
 		if phr in model.vocab:
 			embed_list.append(model.word_vec(phr))
 		else:

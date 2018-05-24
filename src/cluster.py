@@ -27,7 +27,6 @@ class Clustering(object):
 
 	def getClusters(self, embed):
 
-		min_dist, mean_dist, max_dist = 0,0,0
 		n, m 	= len(embed), self.p.embed_dims
 		X 	= np.empty((n, m), np.float32)
 

@@ -63,3 +63,25 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 ##### Extra note:
 
 * We recommend to view *.py files with tab size 8.
+
+#### Citing CESI:
+
+```tex
+@inproceedings{Vashishth:2018:CCO:3178876.3186030,
+	author = {Vashishth, Shikhar and Jain, Prince and Talukdar, Partha},
+	title = {CESI: Canonicalizing Open Knowledge Bases Using Embeddings and Side Information},
+	booktitle = {Proceedings of the 2018 World Wide Web Conference},
+	series = {WWW '18},
+	year = {2018},
+	isbn = {978-1-4503-5639-8},
+	location = {Lyon, France},
+	pages = {1317--1327},
+	numpages = {11},
+	url = {https://doi.org/10.1145/3178876.3186030},
+	doi = {10.1145/3178876.3186030},
+	acmid = {3186030},
+	publisher = {International World Wide Web Conferences Steering Committee},
+	address = {Republic and Canton of Geneva, Switzerland},
+	keywords = {canonicalization, knowledge graph embeddings, knowledge graphs, open knowledge bases},
+}
+```
