@@ -4,13 +4,13 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 
 <img src="https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.png" alt="https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.png">
 
-#### Dependencies
+### Dependencies
 
 * Compatible with both Python 2.7/3.x
 * Dependencies can be installed using `requirements.txt`
 
 
-#### Datasets
+### Datasets
 
 * Dataset ReVerb45k is included with the repository.
 * The input to CESI is a KG as list of triples. Each triple is stored as a json in a new line. An example entry is shown below:
@@ -52,7 +52,7 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 * `entity_linking` is the Entity Linking side information which is utilized by CESI.
 * `kbp_info` Knowledge-Base Propagation side information used by CESI.
 
-#### Usage:
+### Usage:
 
 ##### Setup Environment:
 
@@ -74,7 +74,7 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 
 * We recommend to view *.py files with tab size 8.
 
-#### Citing CESI:
+### Citing:
 
 ```tex
 @inproceedings{Vashishth:2018:CCO:3178876.3186030,
