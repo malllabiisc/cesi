@@ -28,21 +28,29 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 		"have reach",
 		"alessandria"
 	],
+  	"true_link": {
+		"subject": "/m/09w_9",
+		"object":  "/m/02bb_4"
+	},
+  	"src_sentences": [
+		"Frederick had reached Alessandria",
+		"By late October, Frederick had reached Alessandria."
+	],
 	"entity_linking": {
 		"subject":  "Frederick,_Maryland",
 		"object":   "Alessandria"
 	},
-	"true_link": {
-		"subject": "/m/09w_9",
-		"object":  "/m/02bb_4"
-	},
-	"kbp_info": [],
-	"src_sentences": [
-		"Frederick had reached Alessandria",
-		"By late October, Frederick had reached Alessandria."
-	],
+	"kbp_info": []
 }        
 ```
+
+* `_id` unique id of each triple in the Knowledge Graph. 
+* `triple` denotes the actual triple in the Knowledge Graph
+* `triple_norm` denotes the normalized form of the triple (after lemmatization, lower casing ...)
+* `true_link` is the gold canonicalization of subject and object. For relations gold linking is not available.
+* `src_sentences` is the list of sentences from which the triple was extracted by Open IE algorithms. 
+* `entity_linking` is the Entity Linking side information which is utilized by CESI.
+* `kbp_info` Knowledge-Base Propagation side information used by CESI.
 
 #### Usage:
 
