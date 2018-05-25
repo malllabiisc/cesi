@@ -1,5 +1,5 @@
-from flask import Flask
-import json, requests, argparse
+from flask import Flask, request
+import json, argparse
 app = Flask(__name__)
 
 parser = argparse.ArgumentParser(description='')
