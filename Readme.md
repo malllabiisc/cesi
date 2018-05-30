@@ -3,7 +3,7 @@
 Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.thewebconf.org/) paper: [CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information](http://malllabiisc.github.io/publications/papers/cesi_www18.pdf).
 
 ![](https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.png)
-*CESI first acquires side information of noun and relation phrases of Open KB triples. In the second step, it learns embeddings of these NPs and relation phrases while utilizing the side information obtained in previous step. In the third step, CESI performs clustering over the learned embeddings to canonicalize NP and relation phrases. Please refer paper for more details*
+*Overview of CESI. CESI first acquires side information of noun and relation phrases of Open KB triples. In the second step, it learns embeddings of these NPs and relation phrases while utilizing the side information obtained in previous step. In the third step, CESI performs clustering over the learned embeddings to canonicalize NP and relation phrases. Please refer paper for more details*
 
 ### Dependencies
 
