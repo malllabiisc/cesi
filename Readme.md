@@ -71,10 +71,6 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 * On executing the above command, all the output will be dumped in `output/reverb45_test_run` directory. 
 * `-name` is an arbitrary name assigned to the run.
 
-##### Extra note:
-
-* We recommend to view *.py files with tab size 8.
-
 ### Citing:
 
 ```tex
