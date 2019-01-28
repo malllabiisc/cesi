@@ -72,9 +72,10 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 * `-name` is an arbitrary name assigned to the run.
 
 ### Citing:
+Please cite the following paper if you use this code in your work.
 
 ```tex
-@inproceedings{Vashishth:2018:CCO:3178876.3186030,
+@inproceedings{cesi2018,
 	author = {Vashishth, Shikhar and Jain, Prince and Talukdar, Partha},
 	title = {CESI: Canonicalizing Open Knowledge Bases Using Embeddings and Side Information},
 	booktitle = {Proceedings of the 2018 World Wide Web Conference},
