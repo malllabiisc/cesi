@@ -77,7 +77,7 @@ Please cite the following paper if you use this code in your work.
 ```tex
 @inproceedings{cesi2018,
 	author = {Vashishth, Shikhar and Jain, Prince and Talukdar, Partha},
-	title = {CESI: Canonicalizing Open Knowledge Bases Using Embeddings and Side Information},
+	title = {{CESI}: Canonicalizing Open Knowledge Bases Using Embeddings and Side Information},
 	booktitle = {Proceedings of the 2018 World Wide Web Conference},
 	series = {WWW '18},
 	year = {2018},
