@@ -13,7 +13,7 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 
 ### Datasets
 
-* Dataset ReVerb45k is included with the repository.
+* Dataset ReVerb45k, Base and Ambiguous are included with the repository.
 * The input to CESI is a KG as list of triples. Each triple is stored as a json in a new line. An example entry is shown below:
 
 ```json
