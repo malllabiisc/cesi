@@ -1,5 +1,10 @@
 ## CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information
 
+[![Conference](http://img.shields.io/badge/WWW-2018-4b44ce.svg)](https://dl.acm.org/citation.cfm?id=3186030/)
+[![Paper](http://img.shields.io/badge/paper-arxiv.1902.00172-B31B1B.svg)](https://arxiv.org/abs/1902.00172)
+[![Slides](http://img.shields.io/badge/slides-pdf-green.svg)](https://shikhar-vashishth.github.io/assets/pdf/slides_cesi.pdf)
+[![Poster](http://img.shields.io/badge/poster-pdf-blue.svg)](https://shikhar-vashishth.github.io/assets/pdf/cesi_poster.pdf)
+
 Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.thewebconf.org/) paper: [CESI: Canonicalizing Open Knowledge Bases using Embeddings and Side Information](http://malllabiisc.github.io/publications/papers/cesi_www18.pdf).
 
 ![](https://raw.githubusercontent.com/malllabiisc/cesi/master/overview.png)
@@ -74,7 +79,7 @@ Source code and dataset for [The WebConf 2018 (WWW 2018)](https://www2018.theweb
 ### Citing:
 Please cite the following paper if you use this code in your work.
 
-```tex
+```bibtex
 @inproceedings{cesi2018,
 	author = {Vashishth, Shikhar and Jain, Prince and Talukdar, Partha},
 	title = {{CESI}: Canonicalizing Open Knowledge Bases Using Embeddings and Side Information},
