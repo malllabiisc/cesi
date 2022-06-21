@@ -5,5 +5,5 @@ nltk==3.4.5
 joblib==0.11
 requests==2.20.0
 gensim==2.1.0
-numpy==1.13.3
+numpy==1.22.0
 scikit_learn==0.19.1
