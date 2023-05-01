@@ -1,5 +1,5 @@
 scipy==0.19.0
-Flask==1.0.0
+Flask==2.3.2
 editdistance==0.3.1
 nltk==3.4.5
 joblib==0.11
