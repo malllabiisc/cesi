@@ -85,7 +85,7 @@ def queryPPDB(ppdb_url, phr_list):
 	try:
 		data = {"data": phr_list}
 		headers = {'Content-Type' : 'application/json'}
-		req = requests.post(ppdb_url + 'ppdbAll', data=json.dumps(data), headers=headers)
+		req = requests.post(ppdb_url + 'ppdbAll', data=json.dumps(data), headers=headers, timeout=30)
 
 		if (req.status_code == 200):
 			data = json.loads(req.text)
